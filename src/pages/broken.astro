@@ -7,8 +7,7 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-	import gsap from "gsap";
-	import { frame } from "motion";
+	import { animate, frame } from "motion";
 	import { Renderer, Camera, Transform, Program, Mesh, Box } from "ogl";
 
 	const vertex = /* glsl */ `
@@ -70,15 +69,16 @@ import Layout from "../layouts/Layout.astro";
 	cube.position.set(0, -1.3, 0);
 	cube.setParent(scene);
 
-	gsap.to(cube.position, {
-		x: 1,
-		y: 1,
-		z: 1,
-		duration: 2,
-		ease: "easeInOut",
-		repeat: -1,
-		yoyo: true,
-	});
+	animate(
+		cube.position,
+		{ x: 1, y: 1, z: 1 },
+		{
+			duration: 2,
+			ease: "easeInOut",
+			repeat: Infinity,
+			repeatType: "mirror",
+		}
+	);
 
 	frame.render(update);
 	function update() {

@@ -1,3 +1,7 @@
+---
+import "../styles/global.css";
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -9,6 +13,21 @@
 	</head>
 	<body>
 		<slot />
+
+		<div class="fixed bottom-0 right-14 p-4 text-red-500">
+			<ul>
+				<li>
+					<a class="underline underline-offset-2" href="/">
+						With GSAP (ok)
+					</a>
+				</li>
+				<li>
+					<a class="underline underline-offset-2" href="/broken">
+						With Motion (broken)
+					</a>
+				</li>
+			</ul>
+		</div>
 	</body>
 </html>
 
