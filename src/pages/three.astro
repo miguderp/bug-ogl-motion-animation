@@ -1,0 +1,95 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+	<canvas class="fixed inset-0 !size-full"></canvas>
+</Layout>
+
+<script>
+	import gsap from "gsap";
+	import { animate, frame } from "motion";
+	import * as THREE from "three";
+
+	const vertex = /* glsl */ `
+		attribute vec3 position;
+		attribute vec3 normal;
+
+		uniform mat4 modelViewMatrix;
+		uniform mat4 projectionMatrix;
+		uniform mat3 normalMatrix;
+
+		varying vec3 vNormal;
+
+		void main() {
+			vNormal = normalize(normalMatrix * normal);
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		}
+	`;
+
+	const fragment = /* glsl */ `
+		precision highp float;
+
+		varying vec3 vNormal;
+
+		void main() {
+			vec3 normal = normalize(vNormal);
+			float lighting = dot(normal, normalize(vec3(-0.3, 0.8, 0.6)));
+			gl_FragColor.rgb = vec3(0.2, 0.8, 1.0) + lighting * 0.1;
+			gl_FragColor.a = 1.0;
+		}
+	`;
+
+	const scene = new THREE.Scene();
+	const camera = new THREE.PerspectiveCamera(
+		75,
+		window.innerWidth / window.innerHeight,
+		0.1,
+		100
+	);
+	camera.position.z = 5;
+
+	const renderer = new THREE.WebGLRenderer({
+		canvas: document.querySelector("canvas")!,
+	});
+
+	renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+	renderer.setClearColor(0xffffff);
+
+	renderer.setSize(window.innerWidth, window.innerHeight);
+
+	const geometry = new THREE.BoxGeometry(1, 1, 1);
+	const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+	const cube = new THREE.Mesh(geometry, material);
+	scene.add(cube);
+
+	animate(
+		cube.position,
+		{
+			x: 1,
+			y: 1,
+			z: 1,
+		},
+		{
+			duration: 2,
+			ease: "easeInOut",
+			repeat: Infinity,
+			repeatType: "mirror",
+		}
+	);
+
+	// gsap.to(cube.position, {
+	// 	x: 1,
+	// 	y: 1,
+	// 	z: 1,
+	// 	duration: 2,
+	// 	ease: "easeInOut",
+	// });
+
+	frame.render(update);
+	function update() {
+		frame.render(update);
+
+		renderer.render(scene, camera);
+	}
+</script>
